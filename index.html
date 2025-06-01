@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lời nhắn dễ thương</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: url('./img/vutru.jpg') center/cover no-repeat fixed;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    .falling {
+      position: absolute;
+      top: -100px;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+
+    .falling img {
+      image-rendering: auto;
+      object-fit: contain;
+      background: transparent;
+      pointer-events: none;
+      border-radius: 12px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .message {
+      color: #ffb6c1;
+      text-shadow: 1px 1px 2px white;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      position: relative;
+      background: transparent;
+      pointer-events: none;
+      padding: 2px 8px;
+      border-radius: 8px;
+      max-width: 80vw;
+      word-wrap: break-word;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music" autoplay loop>
+    <source src="./phepmau.mp3" type="audio/mpeg">
+    Trình duyệt của bạn không hỗ trợ audio.
+  </audio>
+
+  <script>
+    const messages = [
+      'Chúc em ngày 1/6 vui vẻ!',
+      'Anh yêuu em nhiều lắm',
+      'Càng ngày càng xinhhhhhh',
+      'Gửi em 1 nụ hôn nồng choáy!',
+      'Tụi mình hãy luôn ở bên nhau nhé <3',
+    ];
+
+    const images = [
+      './img/anh1.jpg',
+      './img/anh2.jpg',
+      './img/anh3.jpg',
+      './img/anh4.jpg',
+      './img/anh5.jpg',
+    ];
+
+    const usedLeftPositions = [];
+
+    function getNonOverlappingLeft() {
+      let left;
+      let attempts = 0;
+      do {
+        left = Math.random() * 80 + 10; // tránh sát 2 bên
+        attempts++;
+      } while (usedLeftPositions.some(pos => Math.abs(pos - left) < 10) && attempts < 10);
+
+      usedLeftPositions.push(left);
+      if (usedLeftPositions.length > 10) usedLeftPositions.shift();
+
+      return `${left}vw`;
+    }
+
+    function createFallingElement() {
+      const isImage = Math.random() < 0.5;
+      const el = document.createElement('div');
+      el.classList.add('falling');
+
+      if (isImage) {
+        const img = document.createElement('img');
+        img.src = images[Math.floor(Math.random() * images.length)];
+        const size = 60 + Math.random() * 80;
+        img.style.width = `${size}px`;
+        img.style.height = 'auto';
+        el.appendChild(img);
+      } else {
+        const msg = document.createElement('div');
+        msg.className = 'message';
+        msg.textContent = messages[Math.floor(Math.random() * messages.length)];
+        msg.style.fontSize = `${16 + Math.random() * 12}px`;
+        msg.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+        el.appendChild(msg);
+      }
+
+      el.style.left = getNonOverlappingLeft();
+      el.style.animationDuration = `${5 + Math.random() * 5}s`;
+      document.body.appendChild(el);
+
+      setTimeout(() => el.remove(), 10000);
+    }
+
+    setInterval(createFallingElement, 700);
+
+    // Phát nhạc khi người dùng tương tác (hỗ trợ cả mobile)
+    window.addEventListener('click', () => {
+      const audio = document.getElementById('bg-music');
+      if (audio.paused) audio.play();
+    });
+
+    window.addEventListener('touchstart', () => {
+      const audio = document.getElementById('bg-music');
+      if (audio.paused) audio.play();
+    });
+  </script>
+</body>
+</html>
